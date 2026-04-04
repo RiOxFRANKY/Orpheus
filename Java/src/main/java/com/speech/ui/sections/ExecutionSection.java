@@ -46,7 +46,7 @@ public class ExecutionSection extends AbstractDashboardSection {
         runButton.setFont(runButton.getFont().deriveFont(java.awt.Font.BOLD, 14f));
         // Force the button to be disabled until audio files are Browsed
         runButton.setEnabled(false);
-        panel.add(runButton, "growx, h 0:45:, wrap");
+        panel.add(runButton, "growx, h 45!, wrap");
 
         progressBar = new JProgressBar();
         progressBar.setStringPainted(true);
@@ -97,6 +97,29 @@ public class ExecutionSection extends AbstractDashboardSection {
                 }
 
                 log("Configuration saved to: " + target.getPath());
+
+                // 6. Send JSON output to Python FastAPI backend
+                log("Sending configuration to Python FastAPI backend...");
+                try {
+                    java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
+                    java.net.http.HttpRequest request = java.net.http.HttpRequest.newBuilder()
+                            .uri(java.net.URI.create("http://127.0.0.1:8000/api/config"))
+                            .header("Content-Type", "application/json")
+                            .POST(java.net.http.HttpRequest.BodyPublishers.ofString(json))
+                            .build();
+
+                    java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+                    if (response.statusCode() == 200) {
+                        log("FastAPI backend accepted the configuration.");
+                    } else {
+                        log("FastAPI backend returned status: " + response.statusCode());
+                        log("Response: " + response.body());
+                    }
+                } catch (Exception httpEx) {
+                    log("WARNING: Could not connect to FastAPI backend (is it running on port 8000?)");
+                    log("Error details: " + httpEx.getMessage());
+                }
+
                 log("Starting preprocessing and feature extraction pipeline...");
             } catch (Exception ex) {
                 log("ERROR: Failed to generate extraction configuration: " + ex.getMessage());
@@ -109,21 +132,41 @@ public class ExecutionSection extends AbstractDashboardSection {
             SwingWorker<Void, String> worker = new SwingWorker<>() {
                 @Override
                 protected Void doInBackground() throws Exception {
-                    String[] steps = {
-                        "Loading audio configurations...",
-                        "Resampling audio to 16kHz...",
-                        "Applying noise reduction (Spectral Subtraction)...",
-                        "Extracting MFCC features...",
-                        "Extracting Spectral Centroid & Roll-off...",
-                        "Extracting Prosodic features (Pitch, Jitter)...",
-                        "Aggregating feature vectors...",
-                        "Generating compressed output archives..."
-                    };
-                    
-                    for (int i = 0; i < steps.length; i++) {
-                        Thread.sleep(800 + (int)(Math.random() * 500)); // Simulate work
-                        publish(steps[i]);
-                        setProgress((i + 1) * 100 / steps.length);
+                    java.net.http.HttpClient statusClient = java.net.http.HttpClient.newHttpClient();
+                    java.net.http.HttpRequest statusRequest = java.net.http.HttpRequest.newBuilder()
+                            .uri(java.net.URI.create("http://127.0.0.1:8000/api/status"))
+                            .GET()
+                            .build();
+
+                    String lastMessage = "";
+
+                    while (true) {
+                        try {
+                            java.net.http.HttpResponse<String> statusResponse = statusClient.send(statusRequest, java.net.http.HttpResponse.BodyHandlers.ofString());
+                            if (statusResponse.statusCode() == 200) {
+                                com.google.gson.JsonObject jsonObj = com.google.gson.JsonParser.parseString(statusResponse.body()).getAsJsonObject();
+                                boolean isComplete = jsonObj.get("is_complete").getAsBoolean();
+                                int prog = jsonObj.get("progress").getAsInt();
+                                String msg = jsonObj.get("message").getAsString();
+                                
+                                setProgress(prog);
+                                
+                                if (!msg.equals(lastMessage)) {
+                                    publish(msg);
+                                    lastMessage = msg;
+                                }
+
+                                if (isComplete && prog == 100) {
+                                    break;
+                                }
+                            } else {
+                                publish("Waiting for Python API response...");
+                            }
+                        } catch (Exception e) {
+                            // Suppress transient errors
+                        }
+                        
+                        Thread.sleep(500); // Polling interval
                     }
                     return null;
                 }

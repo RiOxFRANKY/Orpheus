@@ -1,6 +1,8 @@
 Java/target
 Java/output
 
+.venv
+
 # Compiled class file
 *.class
 

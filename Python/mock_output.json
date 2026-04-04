@@ -1,0 +1,16 @@
+{
+    "audioFiles": [
+        "audio/sample1.wav",
+        "audio/sample2.wav"
+    ],
+    "preprocessingSettings": {
+        "resample": true,
+        "targetSampleRate": 16000,
+        "noiseReduction": "spectral_gating"
+    },
+    "featureSelection": {
+        "mfcc": true,
+        "spectral_centroid": true,
+        "pitch": false
+    }
+}
