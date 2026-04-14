@@ -67,7 +67,7 @@ public class InputSection extends AbstractDashboardSection {
             chooser.setFileFilter(filter);
             chooser.setAcceptAllFileFilterUsed(false); // Force sanitization - user cannot select *.*
 
-            int result = chooser.showOpenDialog(panel);
+            int result = chooser.showOpenDialog(SwingUtilities.getWindowAncestor(panel));
             if (result == JFileChooser.APPROVE_OPTION) {
                 java.io.File[] files = chooser.getSelectedFiles();
                 for (java.io.File file : files) {

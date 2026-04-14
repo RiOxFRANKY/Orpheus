@@ -67,14 +67,14 @@ public class OutputSection extends AbstractDashboardSection {
         chooser.setSelectedFile(new File(defaultFilename));
         chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter(filterDesc, extension));
 
-        int result = chooser.showSaveDialog(panel);
+        int result = chooser.showSaveDialog(SwingUtilities.getWindowAncestor(panel));
         if (result != JFileChooser.APPROVE_OPTION) {
             return;
         }
 
         File target = chooser.getSelectedFile();
-        // Ensure correct extension
-        if (!target.getName().endsWith("." + extension)) {
+        // Ensure correct extension safely ignoring cases like .CSV vs .csv
+        if (!target.getName().toLowerCase().endsWith("." + extension.toLowerCase())) {
             target = new File(target.getAbsolutePath() + "." + extension);
         }
 

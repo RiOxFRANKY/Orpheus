@@ -80,11 +80,10 @@ public class ExecutionSection extends AbstractDashboardSection {
                 // 2. Wrap into our model for GSON serialization
                 com.speech.model.ExtractionConfig config = new com.speech.model.ExtractionConfig(files, prep, features);
 
-                // 3. Ensure the 'output' directory exists in the project root
-                java.io.File outputDir = new java.io.File("output");
-                if (!outputDir.exists()) {
-                    outputDir.mkdirs();
-                }
+                // 3. Ensure the 'output' directory exists safely
+                java.nio.file.Path outputDirPath = java.nio.file.Paths.get("output");
+                java.nio.file.Files.createDirectories(outputDirPath);
+                java.io.File outputDir = outputDirPath.toFile();
 
                 // 4. Serialize to JSON using Google GSON
                 com.google.gson.Gson gson = new com.google.gson.GsonBuilder().setPrettyPrinting().create();

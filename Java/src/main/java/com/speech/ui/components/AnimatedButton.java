@@ -111,6 +111,10 @@ public class AnimatedButton extends JButton {
                 g2.setColor(new Color(highlightColor.getRed(), highlightColor.getGreen(), highlightColor.getBlue(), (int)(pressAlpha * 80)));
                 g2.fillRoundRect(2, 2, w-4, h-4, arc, arc);
             }
+        } else {
+            // Fill disabled buttons with a dim standard shape rather than hollowing them out completely
+            g2.setColor(new Color(60, 60, 60, 80));
+            g2.fillRoundRect(2, 2, w-4, h-4, arc, arc);
         }
 
         // 2. Draw Standard FlatLaf Border (very thin)
