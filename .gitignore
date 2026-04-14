@@ -1,7 +1,11 @@
 Java/target
-Java/output
+output
 
 .venv
+
+Orpheus_Release_v1.0
+
+CODEBASE_DOCUMENTATION.txt
 
 __pycache__
 

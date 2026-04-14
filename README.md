@@ -1,68 +1,47 @@
-# Orpheus 🎙️
-### High-Fidelity Speech Feature Extraction Dashboard
+# Orpheus Audio Dashboard 🎶
 
-Orpheus is a modern, high-performance Java Swing dashboard designed to streamline the preprocessing and feature extraction pipeline for speech processing and machine learning workflows.
+Orpheus is a powerful, dual-architecture **Speech & Audio Feature Extraction System**. It combines a sleek, modern desktop interface written in Java with an incredibly fast computational Machine Learning backend driven by Python (`librosa`, `scipy`). 
 
----
+The Orpheus pipeline is designed to automate complex digital signal processing (DSP). You can dynamically ingest raw audio files (`.wav`, `.mp3`), instantly apply deep preprocessing operations (like Butterworth High-Pass filters and Spectral Subtraction Noise Reduction), and export massive arrays of mathematical data points (MFCCs, Chroma, F0 Pitch, Shimmer, HNR, Spectral Centroids) strictly into finalized CSV datasets ready for Artificial Intelligence training!
 
-## 🚀 Key Features
-
-### 1. Intelligent Audio Input
-- **Sanitized Browsing**: Native file filters restricted exclusively to audio formats (`.wav`, `.mp3`, `.ogg`, `.flac`, etc.) to prevent invalid data entry.
-- **Batch Processing**: Support for multi-file selection and real-time status tracking in an elastic HUD table.
-- **Reactive Controls**: The extraction engine stays disabled until valid audio files are detected.
-
-### 2. Advanced Preprocessing HUD
-- Granular control over **Resampling**, **Noise Reduction** (Spectral Subtraction), **Normalization (dBFS)**, and **High-Pass Filtering**.
-- **Silent Interval Removal** toggle for optimized data density.
-
-### 3. Comprehensive Feature Selection
-- Categorized selection for:
-  - **Cepstral & Tonal**: MFCCs, Chroma Features.
-  - **Spectral**: Zero-Crossing Rate, Centroid, Bandwidth, Roll-Off.
-  - **Prosodic & Energy**: Pitch (F0), RMSE, Shimmer, Jitter, HNR.
-- **Bulk Utility**: Instant "Select All" and "Deselect All" logic for rapid prototyping.
-
-### 4. JSON Configuration Engine
-- **One-Click Export**: Converts the entire dashboard state (relative file paths, preprocessing parameters, and feature toggles) into a professionally formatted `extraction_settings.json`.
-- **Output Management**: Automatically generates and manages an `output/` directory for configuration persistence.
-
-### 5. Premium UI/UX Design
-- **Responsive Architecture**: Hand-tuned **MigLayout** configurations with "Smart Scroll" fallback—the UI remains elastic at high resolutions but provides master scrollbars for ultra-compact views (min-size: 800x600).
-- **Dual-Theme Engine**: Smooth, animated transition between **Modern Dark** and **Clean Light** modes via a custom animated HUD switch.
-- **Rich Visuals**: Integrated SVG icons and high-fidelity typography using the **Glonto** and **Anticyclone** font families.
+## ✨ Key Features
+- **Modern GUI Application**: Built natively in Java using `FlatLaf` Dark Themes, SVG Salamander icons, and MigLayout.
+- **Python Machine Learning Engine**: Completely decoupled `FastAPI` REST server serving `librosa` pipelines on localhost.
+- **Deep Control Matrix**: Filter specific features via toggle buttons to save on computing power (dynamically loads only required Python Extractors).
+- **Auto-Bootstrapping Backend**: Does not require users to understand virtual environments; internally scaffolds `.venv` setups on demand!
+- **Cross-Lingual Bridging**: Achieved strictly via localized `JSON` configuration maps passed through HTTP protocols.
 
 ---
 
-## 🛠️ Technology Stack
-- **Languages**: Java 17+
-- **Build System**: Maven
-- **Look & Feel**: [FlatLaf](https://github.com/JFormDesigner/FlatLaf) (Modern Swing L&F)
-- **Layout Engine**: [MigLayout](http://www.miglayout.com/) (Fluid, elastic grid system)
-- **Serialization**: [Google GSON](https://github.com/google/gson)
-- **Graphics**: [SVG Salamander](https://github.com/blackberry/SVG-Salamander)
+## ⚡ Installation (For Users)
+The absolute easiest way to run Orpheus is to use the official GitHub Release Bundle!
+1. Go to the **Releases** tab on GitHub and download `Orpheus_Release_v1.x.zip`. 
+2. Extract the folder anywhere on your Windows PC.
+3. You must have **Java 17+** and **Python 3.10+** installed.
+4. Double-click `Start-Orpheus.bat`!
+   - On your very first run, it will automatically download the heavy `librosa` machine-learning libraries into a hidden folder for you safely.
+   - It will automatically launch the UI and the server together!
 
 ---
 
-## 📦 Getting Started
+## 💻 Developer Setup (For Contributors)
+If you want to manually edit the source code and compile Orpheus yourself:
 
-### Prerequisites
-- JDK 17 or higher
-- Apache Maven
+### Prerequisites:
+- JDK 17+
+- Maven (`mvn`)
+- Python 3.10+
 
-### Installation & Run
-```bash
-# Clone the repository
-git clone https://github.com/RiOxFRANKY/Orpheus.git
-
-# Navigate to the Java source
-cd Orpheus/Java
-
-# Clean, Compile and Launch
-mvn clean compile exec:java
-```
+### Steps:
+1. Clone the repository natively.
+2. Ensure you are in the root directory.
+3. On Windows, just execute `.\run.ps1` in PowerShell.
+   > The developer PS1 script will automatically invoke Maven to natively compile the UI code dynamically, while spinning up `uvicorn` in a detached secondary window!
 
 ---
 
-## 📄 License
-Project status: **Operational / Feature Extraction Ready**
+## 🛠️ Tech Stack
+- **Frontend GUI**: Java Swing, Maven, FlatLaf, GSON
+- **Backend Core**: Python 3.10, FastAPI, Uvicorn 
+- **DSP Engine**: Librosa, NumPy, SciPy, NoiseReduce
+- **Distribution**: PowerShell Automated Batching, Maven Shade Plugin
