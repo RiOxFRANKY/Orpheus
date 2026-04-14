@@ -2,7 +2,7 @@ import requests
 import json
 
 # Define the url where the FastAPI server is listening
-url = "http://127.0.0.1:8000/api/config"
+url = "http://127.0.0.1:9999/api/config"
 
 # Create a sample mock configuration (similar to what the Java GUI builds)
 data = {

@@ -2,3 +2,10 @@ fastapi
 uvicorn[standard]
 pydantic
 requests
+librosa
+numpy
+pandas
+soundfile
+scipy
+noisereduce
+python-multipart

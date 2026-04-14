@@ -90,17 +90,12 @@ public class InputSection extends AbstractDashboardSection {
     }
 
     /**
-     * Natively calculates and returns relative paths for all selected audio files.
+     * Natively calculates and returns absolute paths for all selected audio files.
      */
     public java.util.List<String> getSelectedRelativePaths() {
         java.util.List<String> paths = new java.util.ArrayList<>();
-        String base = System.getProperty("user.dir");
         for (java.io.File file : selectedFiles) {
-            String path = file.getAbsolutePath();
-            if (path.startsWith(base)) {
-                path = "." + path.substring(base.length()).replace("\\", "/");
-            }
-            paths.add(path);
+            paths.add(file.getAbsolutePath());
         }
         return paths;
     }

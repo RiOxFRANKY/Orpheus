@@ -101,9 +101,11 @@ public class ExecutionSection extends AbstractDashboardSection {
                 // 6. Send JSON output to Python FastAPI backend
                 log("Sending configuration to Python FastAPI backend...");
                 try {
-                    java.net.http.HttpClient client = java.net.http.HttpClient.newHttpClient();
+                    java.net.http.HttpClient client = java.net.http.HttpClient.newBuilder()
+                            .version(java.net.http.HttpClient.Version.HTTP_1_1)
+                            .build();
                     java.net.http.HttpRequest request = java.net.http.HttpRequest.newBuilder()
-                            .uri(java.net.URI.create("http://127.0.0.1:8000/api/config"))
+                            .uri(java.net.URI.create("http://127.0.0.1:9999/api/config"))
                             .header("Content-Type", "application/json")
                             .POST(java.net.http.HttpRequest.BodyPublishers.ofString(json))
                             .build();
@@ -114,10 +116,14 @@ public class ExecutionSection extends AbstractDashboardSection {
                     } else {
                         log("FastAPI backend returned status: " + response.statusCode());
                         log("Response: " + response.body());
+                        runButton.setEnabled(true);
+                        return;
                     }
                 } catch (Exception httpEx) {
-                    log("WARNING: Could not connect to FastAPI backend (is it running on port 8000?)");
+                    log("WARNING: Could not connect to FastAPI backend (is it running on port 9999?)");
                     log("Error details: " + httpEx.getMessage());
+                    runButton.setEnabled(true);
+                    return;
                 }
 
                 log("Starting preprocessing and feature extraction pipeline...");
@@ -129,12 +135,14 @@ public class ExecutionSection extends AbstractDashboardSection {
             }
             
             // Re-importing inside for simple scope handling in this prototype
-            SwingWorker<Void, String> worker = new SwingWorker<>() {
+            SwingWorker<String, String> worker = new SwingWorker<>() {
                 @Override
-                protected Void doInBackground() throws Exception {
-                    java.net.http.HttpClient statusClient = java.net.http.HttpClient.newHttpClient();
+                protected String doInBackground() throws Exception {
+                    java.net.http.HttpClient statusClient = java.net.http.HttpClient.newBuilder()
+                            .version(java.net.http.HttpClient.Version.HTTP_1_1)
+                            .build();
                     java.net.http.HttpRequest statusRequest = java.net.http.HttpRequest.newBuilder()
-                            .uri(java.net.URI.create("http://127.0.0.1:8000/api/status"))
+                            .uri(java.net.URI.create("http://127.0.0.1:9999/api/status"))
                             .GET()
                             .build();
 
@@ -168,7 +176,7 @@ public class ExecutionSection extends AbstractDashboardSection {
                         
                         Thread.sleep(500); // Polling interval
                     }
-                    return null;
+                    return lastMessage;
                 }
 
                 @Override
@@ -181,6 +189,19 @@ public class ExecutionSection extends AbstractDashboardSection {
 
                 @Override
                 protected void done() {
+                    try {
+                        String finalMsg = get();
+                        if (finalMsg != null && finalMsg.startsWith("Error:")) {
+                            progressBar.setString("Failed");
+                            runButton.setEnabled(true);
+                            JOptionPane.showMessageDialog(panel, 
+                                "Pipeline Failed:\n" + finalMsg, 
+                                "Extraction Error", 
+                                JOptionPane.ERROR_MESSAGE);
+                            return;
+                        }
+                    } catch (Exception e) {}
+
                     progressBar.setValue(100);
                     progressBar.setString("Completed Successfully");
                     log("Feature extraction completed successfully!");
