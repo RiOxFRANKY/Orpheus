@@ -4,6 +4,8 @@ import javax.swing.*;
 import javax.swing.border.TitledBorder;
 import net.miginfocom.swing.MigLayout;
 import java.awt.Font;
+import com.speech.util.FontHelper;
+import javax.swing.border.EtchedBorder;
 
 public abstract class AbstractDashboardSection implements DashboardSection {
     
@@ -16,11 +18,11 @@ public abstract class AbstractDashboardSection implements DashboardSection {
             
             // Explicitly use an EtchedBorder to ensure top/bottom lines are prominently visible regardless of the LAF style
             TitledBorder border = BorderFactory.createTitledBorder(
-                BorderFactory.createEtchedBorder(javax.swing.border.EtchedBorder.LOWERED),
+                BorderFactory.createEtchedBorder(EtchedBorder.LOWERED),
                 getSectionTitle()
             );
             // Use a regular Font (not UIResource) to ensure the Glonto header is PERSISTENT across theme changes!
-            border.setTitleFont(com.speech.util.FontHelper.getGlontoFont(Font.BOLD, 14f));
+            border.setTitleFont(FontHelper.getGlontoFont(Font.BOLD, 14f));
             
             // Apply a CompoundBorder to add exactly 10px of high-end spacing between the heading title and the actual content!
             panel.setBorder(BorderFactory.createCompoundBorder(

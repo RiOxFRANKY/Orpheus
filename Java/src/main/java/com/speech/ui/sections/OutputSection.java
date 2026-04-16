@@ -5,7 +5,9 @@ import com.speech.ui.components.AnimatedButton;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileNameExtensionFilter;
 import java.io.*;
+import com.speech.util.SVGIconHelper;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
@@ -30,11 +32,11 @@ public class OutputSection extends AbstractDashboardSection {
         panel.setLayout(new MigLayout("fillx, insets 10", "[grow]15[grow]", "[grow]"));
 
         saveCsvButton = new AnimatedButton("Save Processed Audio (CSV)");
-        saveCsvButton.setIcon(com.speech.util.SVGIconHelper.getIcon("download.svg"));
+        saveCsvButton.setIcon(SVGIconHelper.getIcon("download.svg"));
         saveCsvButton.setEnabled(false);
 
         saveZipButton = new AnimatedButton("Save Processed Audio (ZIP)");
-        saveZipButton.setIcon(com.speech.util.SVGIconHelper.getIcon("download.svg"));
+        saveZipButton.setIcon(SVGIconHelper.getIcon("download.svg"));
         saveZipButton.setEnabled(false);
 
         // Allow Output buttons to demand a tall, prominent vertical space (minimum 50px, up to 100!)
@@ -65,7 +67,7 @@ public class OutputSection extends AbstractDashboardSection {
         JFileChooser chooser = new JFileChooser();
         chooser.setDialogTitle("Save As");
         chooser.setSelectedFile(new File(defaultFilename));
-        chooser.setFileFilter(new javax.swing.filechooser.FileNameExtensionFilter(filterDesc, extension));
+        chooser.setFileFilter(new FileNameExtensionFilter(filterDesc, extension));
 
         int result = chooser.showSaveDialog(SwingUtilities.getWindowAncestor(panel));
         if (result != JFileChooser.APPROVE_OPTION) {

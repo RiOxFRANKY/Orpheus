@@ -7,8 +7,13 @@ import net.miginfocom.swing.MigLayout;
 import javax.swing.*;
 import java.awt.event.ActionListener;
 import java.awt.Font;
+import java.awt.FlowLayout;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.LinkedHashMap;
+import javax.swing.plaf.FontUIResource;
+import com.speech.util.FontHelper;
 
 public class FeatureSelectionSection extends AbstractDashboardSection {
 
@@ -30,7 +35,7 @@ public class FeatureSelectionSection extends AbstractDashboardSection {
         deselectAllButton = new AnimatedButton("Deselect All");
 
         // Use FlowLayout.RIGHT to position buttons as requested
-        JPanel buttonPanel = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.RIGHT, 15, 0));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.RIGHT, 15, 0));
         buttonPanel.add(selectAllButton);
         buttonPanel.add(deselectAllButton);
         
@@ -43,11 +48,11 @@ public class FeatureSelectionSection extends AbstractDashboardSection {
 
         // Group Definitions mapped natively onto UIResource for elastic shrinking
         JLabel group1 = new JLabel("Cepstral & Tonal");
-        group1.setFont(new javax.swing.plaf.FontUIResource(com.speech.util.FontHelper.getGlontoFont(Font.BOLD, 12f)));
+        group1.setFont(new FontUIResource(FontHelper.getGlontoFont(Font.BOLD, 12f)));
         JLabel group2 = new JLabel("Spectral");
-        group2.setFont(new javax.swing.plaf.FontUIResource(com.speech.util.FontHelper.getGlontoFont(Font.BOLD, 12f)));
+        group2.setFont(new FontUIResource(FontHelper.getGlontoFont(Font.BOLD, 12f)));
         JLabel group3 = new JLabel("Prosodic, Energy & Other");
-        group3.setFont(new javax.swing.plaf.FontUIResource(com.speech.util.FontHelper.getGlontoFont(Font.BOLD, 12f)));
+        group3.setFont(new FontUIResource(FontHelper.getGlontoFont(Font.BOLD, 12f)));
 
         checklistPanel.add(group1);
         checklistPanel.add(group2);
@@ -102,7 +107,7 @@ public class FeatureSelectionSection extends AbstractDashboardSection {
     private JCheckBox addCheckBox(String text) {
         JCheckBox cb = new JCheckBox(text);
         // Reduce font size to 11f for a clean, professional look
-        cb.setFont(com.speech.util.FontHelper.getAnticycloneFont(Font.PLAIN, 11f));
+        cb.setFont(FontHelper.getAnticycloneFont(Font.PLAIN, 11f));
         allCheckBoxes.add(cb);
         return cb;
     }
@@ -110,8 +115,8 @@ public class FeatureSelectionSection extends AbstractDashboardSection {
     /**
      * Natively extracts and returns a map of all feature tokens and their selected state.
      */
-    public java.util.Map<String, Boolean> exportSelections() {
-        java.util.Map<String, Boolean> selections = new java.util.LinkedHashMap<>();
+    public Map<String, Boolean> exportSelections() {
+        Map<String, Boolean> selections = new LinkedHashMap<>();
         for (JCheckBox cb : allCheckBoxes) {
             selections.put(cb.getText(), cb.isSelected());
         }

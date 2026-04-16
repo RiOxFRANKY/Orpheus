@@ -5,6 +5,24 @@ import com.speech.ui.components.AnimatedButton;
 import net.miginfocom.swing.MigLayout;
 
 import javax.swing.*;
+import java.awt.Font;
+import java.awt.Color;
+import java.util.List;
+import java.util.Map;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.Files;
+import java.io.File;
+import java.io.FileWriter;
+import java.net.URI;
+import java.net.http.HttpClient;
+import java.net.http.HttpRequest;
+import java.net.http.HttpResponse;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
+import com.google.gson.JsonParser;
+import com.speech.model.ExtractionConfig;
 
 public class ExecutionSection extends AbstractDashboardSection {
 
@@ -43,7 +61,7 @@ public class ExecutionSection extends AbstractDashboardSection {
         // Apply Special Blue HUD Glow to the main extraction trigger
         runButton.setSpecialGlow(true);
         // Make the button large and prominent
-        runButton.setFont(runButton.getFont().deriveFont(java.awt.Font.BOLD, 14f));
+        runButton.setFont(runButton.getFont().deriveFont(Font.BOLD, 14f));
         // Force the button to be disabled until audio files are Browsed
         runButton.setEnabled(false);
         panel.add(runButton, "growx, h 45!, wrap");
@@ -54,9 +72,9 @@ public class ExecutionSection extends AbstractDashboardSection {
 
         consoleArea = new JTextArea();
         consoleArea.setEditable(false);
-        consoleArea.setBackground(new java.awt.Color(25, 25, 25));
-        consoleArea.setForeground(new java.awt.Color(200, 200, 200));
-        consoleArea.setFont(new java.awt.Font("Monospaced", java.awt.Font.PLAIN, 12));
+        consoleArea.setBackground(new Color(25, 25, 25));
+        consoleArea.setForeground(new Color(200, 200, 200));
+        consoleArea.setFont(new Font("Monospaced", Font.PLAIN, 12));
         consoleArea.setText("====== SYSTEM READY ======\n");
 
         JScrollPane scrollPane = new JScrollPane(consoleArea);
@@ -73,25 +91,25 @@ public class ExecutionSection extends AbstractDashboardSection {
             
             try {
                 // 1. Gather all dashboard state natively from the sibling sections
-                java.util.List<String> files = inputSection.getSelectedRelativePaths();
-                java.util.Map<String, Object> prep = prepSection.exportSettings();
-                java.util.Map<String, Boolean> features = featureSection.exportSelections();
+                List<String> files = inputSection.getSelectedRelativePaths();
+                Map<String, Object> prep = prepSection.exportSettings();
+                Map<String, Boolean> features = featureSection.exportSelections();
 
                 // 2. Wrap into our model for GSON serialization
-                com.speech.model.ExtractionConfig config = new com.speech.model.ExtractionConfig(files, prep, features);
+                ExtractionConfig config = new ExtractionConfig(files, prep, features);
 
                 // 3. Ensure the 'output' directory exists safely
-                java.nio.file.Path outputDirPath = java.nio.file.Paths.get("output");
-                java.nio.file.Files.createDirectories(outputDirPath);
-                java.io.File outputDir = outputDirPath.toFile();
+                Path outputDirPath = Paths.get("output");
+                Files.createDirectories(outputDirPath);
+                File outputDir = outputDirPath.toFile();
 
                 // 4. Serialize to JSON using Google GSON
-                com.google.gson.Gson gson = new com.google.gson.GsonBuilder().setPrettyPrinting().create();
+                Gson gson = new GsonBuilder().setPrettyPrinting().create();
                 String json = gson.toJson(config);
 
                 // 5. Write to the target file
-                java.io.File target = new java.io.File(outputDir, "extraction_settings.json");
-                try (java.io.FileWriter writer = new java.io.FileWriter(target)) {
+                File target = new File(outputDir, "extraction_settings.json");
+                try (FileWriter writer = new FileWriter(target)) {
                     writer.write(json);
                 }
 
@@ -100,16 +118,16 @@ public class ExecutionSection extends AbstractDashboardSection {
                 // 6. Send JSON output to Python FastAPI backend
                 log("Sending configuration to Python FastAPI backend...");
                 try {
-                    java.net.http.HttpClient client = java.net.http.HttpClient.newBuilder()
-                            .version(java.net.http.HttpClient.Version.HTTP_1_1)
+                    HttpClient client = HttpClient.newBuilder()
+                            .version(HttpClient.Version.HTTP_1_1)
                             .build();
-                    java.net.http.HttpRequest request = java.net.http.HttpRequest.newBuilder()
-                            .uri(java.net.URI.create("http://127.0.0.1:9999/api/config"))
+                    HttpRequest request = HttpRequest.newBuilder()
+                            .uri(URI.create("http://127.0.0.1:9999/api/config"))
                             .header("Content-Type", "application/json")
-                            .POST(java.net.http.HttpRequest.BodyPublishers.ofString(json))
+                            .POST(HttpRequest.BodyPublishers.ofString(json))
                             .build();
 
-                    java.net.http.HttpResponse<String> response = client.send(request, java.net.http.HttpResponse.BodyHandlers.ofString());
+                    HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
                     if (response.statusCode() == 200) {
                         log("FastAPI backend accepted the configuration.");
                     } else {
@@ -137,11 +155,11 @@ public class ExecutionSection extends AbstractDashboardSection {
             SwingWorker<String, String> worker = new SwingWorker<>() {
                 @Override
                 protected String doInBackground() throws Exception {
-                    java.net.http.HttpClient statusClient = java.net.http.HttpClient.newBuilder()
-                            .version(java.net.http.HttpClient.Version.HTTP_1_1)
+                    HttpClient statusClient = HttpClient.newBuilder()
+                            .version(HttpClient.Version.HTTP_1_1)
                             .build();
-                    java.net.http.HttpRequest statusRequest = java.net.http.HttpRequest.newBuilder()
-                            .uri(java.net.URI.create("http://127.0.0.1:9999/api/status"))
+                    HttpRequest statusRequest = HttpRequest.newBuilder()
+                            .uri(URI.create("http://127.0.0.1:9999/api/status"))
                             .GET()
                             .build();
 
@@ -149,9 +167,9 @@ public class ExecutionSection extends AbstractDashboardSection {
 
                     while (true) {
                         try {
-                            java.net.http.HttpResponse<String> statusResponse = statusClient.send(statusRequest, java.net.http.HttpResponse.BodyHandlers.ofString());
+                            HttpResponse<String> statusResponse = statusClient.send(statusRequest, HttpResponse.BodyHandlers.ofString());
                             if (statusResponse.statusCode() == 200) {
-                                com.google.gson.JsonObject jsonObj = com.google.gson.JsonParser.parseString(statusResponse.body()).getAsJsonObject();
+                                JsonObject jsonObj = JsonParser.parseString(statusResponse.body()).getAsJsonObject();
                                 boolean isComplete = jsonObj.get("is_complete").getAsBoolean();
                                 int prog = jsonObj.get("progress").getAsInt();
                                 String msg = jsonObj.get("message").getAsString();
@@ -179,7 +197,7 @@ public class ExecutionSection extends AbstractDashboardSection {
                 }
 
                 @Override
-                protected void process(java.util.List<String> chunks) {
+                protected void process(List<String> chunks) {
                     for (String msg : chunks) {
                         log(msg);
                         progressBar.setString(msg);

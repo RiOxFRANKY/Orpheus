@@ -10,6 +10,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import javax.swing.plaf.FontUIResource;
+import com.speech.util.FontHelper;
 
 public class ThemeSwitch extends JComponent {
     private boolean isDarkMode = true;
@@ -74,7 +76,7 @@ public class ThemeSwitch extends JComponent {
             
             // Re-enforce global font before invoking the new theme to ensure it never gets overridden 
             // We use 12f to match the original App.java baseline!
-            javax.swing.plaf.FontUIResource mainFont = new javax.swing.plaf.FontUIResource(com.speech.util.FontHelper.getAnticycloneFont(Font.PLAIN, 12f));
+            FontUIResource mainFont = new FontUIResource(FontHelper.getAnticycloneFont(Font.PLAIN, 12f));
             UIManager.put("defaultFont", mainFont);
 
             if (isDarkMode) {

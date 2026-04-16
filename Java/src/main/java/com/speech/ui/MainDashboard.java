@@ -4,6 +4,7 @@ import net.miginfocom.swing.MigLayout;
 import com.speech.ui.sections.*;
 import javax.swing.*;
 import java.awt.*;
+import java.net.URL;
 
 public class MainDashboard extends JFrame {
 
@@ -12,7 +13,7 @@ public class MainDashboard extends JFrame {
         
         // Dynamically locate and bind the user's custom logo to the Window/Taskbar icon slots natively
         try {
-            java.net.URL iconURL = getClass().getResource("/icons/logo.png");
+            URL iconURL = getClass().getResource("/icons/logo.png");
             if (iconURL != null) {
                 setIconImage(new ImageIcon(iconURL).getImage());
             } else {

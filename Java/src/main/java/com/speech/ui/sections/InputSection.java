@@ -5,6 +5,12 @@ import net.miginfocom.swing.MigLayout;
 import com.speech.ui.components.AnimatedButton;
 import javax.swing.*;
 import javax.swing.table.DefaultTableModel;
+import javax.swing.filechooser.FileNameExtensionFilter;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.List;
+import java.awt.FlowLayout;
+import com.speech.util.SVGIconHelper;
 
 public class InputSection extends AbstractDashboardSection {
 
@@ -12,7 +18,7 @@ public class InputSection extends AbstractDashboardSection {
     private AnimatedButton clearAllButton;
     private JTable fileTable;
     private DefaultTableModel fileTableModel;
-    private java.util.List<java.io.File> selectedFiles = new java.util.ArrayList<>();
+    private List<File> selectedFiles = new ArrayList<>();
     private Runnable onFileChangeListener;
 
     public void setOnFileChangeListener(Runnable listener) {
@@ -29,8 +35,8 @@ public class InputSection extends AbstractDashboardSection {
         panel.setLayout(new MigLayout("fillx, insets 5", "[grow]", "[]0[grow]"));
 
         // Button Panel - Increased horizontal gap to 15px for an open, airy feel
-        JPanel buttonPanel = new JPanel(new java.awt.FlowLayout(java.awt.FlowLayout.LEFT, 15, 0));
-        browseButton = new AnimatedButton("Browse Audio Files", com.speech.util.SVGIconHelper.getIcon("folder.svg"));
+        JPanel buttonPanel = new JPanel(new FlowLayout(FlowLayout.LEFT, 15, 0));
+        browseButton = new AnimatedButton("Browse Audio Files", SVGIconHelper.getIcon("folder.svg"));
         clearAllButton = new AnimatedButton("Clear Files");
 
         buttonPanel.add(browseButton);
@@ -60,7 +66,7 @@ public class InputSection extends AbstractDashboardSection {
             chooser.setMultiSelectionEnabled(true);
             
             // Native Sanitization: Only allow browsing for verified audio formats
-            javax.swing.filechooser.FileNameExtensionFilter filter = new javax.swing.filechooser.FileNameExtensionFilter(
+            FileNameExtensionFilter filter = new FileNameExtensionFilter(
                 "Audio Files (*.wav, *.mp3, *.ogg, *.flac, *.aac)", 
                 "wav", "mp3", "ogg", "flac", "aac", "m4a", "wma"
             );
@@ -69,8 +75,8 @@ public class InputSection extends AbstractDashboardSection {
 
             int result = chooser.showOpenDialog(SwingUtilities.getWindowAncestor(panel));
             if (result == JFileChooser.APPROVE_OPTION) {
-                java.io.File[] files = chooser.getSelectedFiles();
-                for (java.io.File file : files) {
+                File[] files = chooser.getSelectedFiles();
+                for (File file : files) {
                     selectedFiles.add(file);
                     fileTableModel.addRow(new Object[]{file.getName(), "Ready"});
                 }
@@ -92,9 +98,9 @@ public class InputSection extends AbstractDashboardSection {
     /**
      * Natively calculates and returns absolute paths for all selected audio files.
      */
-    public java.util.List<String> getSelectedRelativePaths() {
-        java.util.List<String> paths = new java.util.ArrayList<>();
-        for (java.io.File file : selectedFiles) {
+    public List<String> getSelectedRelativePaths() {
+        List<String> paths = new ArrayList<>();
+        for (File file : selectedFiles) {
             paths.add(file.getAbsolutePath());
         }
         return paths;
