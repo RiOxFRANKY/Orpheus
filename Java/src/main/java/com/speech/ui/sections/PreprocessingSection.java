@@ -28,7 +28,7 @@ public class PreprocessingSection extends AbstractDashboardSection {
         // Resampling
         resamplingCheck = new JCheckBox("Resampling");
         resamplingCheck.setFont(FontHelper.getAnticycloneFont(Font.PLAIN, 11f));
-        resamplingCombo = new JComboBox<>(new String[]{"16000 Hz", "44100 Hz"});
+        resamplingCombo = new JComboBox<>(new String[]{"8000 Hz", "16000 Hz", "22050 Hz", "44100 Hz", "48000 Hz"});
         panel.add(resamplingCheck);
         panel.add(resamplingCombo, "wrap");
 
