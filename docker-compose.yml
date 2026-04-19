@@ -1,0 +1,22 @@
+version: "3.9"
+
+services:
+  orpheus-backend:
+    build: .
+    image: orpheus:latest
+    container_name: orpheus-backend
+    ports:
+      - "9999:9999"
+    volumes:
+      # Mount a local directory for audio input/output persistence
+      - ./data/input:/app/Python/input
+      - ./data/output:/app/Python/output
+    environment:
+      - PYTHONUNBUFFERED=1
+    restart: unless-stopped
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:9999/')"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 10s

@@ -1,0 +1,32 @@
+# Virtual environment
+.venv/
+__pycache__/
+
+# Git
+.git/
+.gitignore
+
+# Build artifacts
+Java/target/
+Java/output/
+Python/output/
+
+# IDE
+.idea/
+.vscode/
+*.iml
+
+# OS files
+Thumbs.db
+.DS_Store
+
+# Docker
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# Docs & misc
+doc/
+*.md
+*.ps1
+Orpheus_Release_v1.0/
