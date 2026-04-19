@@ -173,6 +173,10 @@ class ExtractionService:
             file_label = Path(audio_path).name
             base_progress = int((idx / total_files) * 80)  # 0-80 % for files
 
+            print(f"\n{'═'*60}")
+            print(f"  FILE [{idx + 1}/{total_files}]: {file_label}")
+            print(f"{'═'*60}")
+
             # ── Load audio ────────────────────────────────────────
             self._report(
                 status_callback,
@@ -181,6 +185,16 @@ class ExtractionService:
             )
             try:
                 y, sr = librosa.load(audio_path, sr=None, mono=True)
+                np.set_printoptions(precision=8, suppress=False, linewidth=120, threshold=40)
+                print(f"[Load] ✔ Loaded audio")
+                print(f"[Load]   Path    : {audio_path}")
+                print(f"[Load]   Array   : shape={y.shape}, dtype={y.dtype}")
+                print(f"[Load]   SR      : {sr} Hz")
+                print(f"[Load]   Duration: {len(y)/sr:.4f}s  ({len(y):,} samples)")
+                print(f"[Load]   Amplitude: min={y.min():.6f}, max={y.max():.6f}, "
+                      f"mean={y.mean():.6f}, rms={float(np.sqrt(np.mean(y**2))):.6f}")
+                print(f"[Load]   y (first 30 samples):")
+                print(f"         {y[:30]}")
             except Exception as exc:
                 print(f"[ExtractionService] Failed to load {audio_path}: {exc}")
                 continue
@@ -217,6 +231,8 @@ class ExtractionService:
                         row.setdefault(col, 0.0)
 
             all_rows.append(row)
+            print(f"\n[File Done] ✔ {file_label} → {len(row)-1} features extracted")
+            print(f"{'─'*60}")
 
         # ── 3. Export CSV ─────────────────────────────────────────
         self._report(status_callback, 85, "Writing features CSV…")
